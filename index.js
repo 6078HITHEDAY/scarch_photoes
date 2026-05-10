@@ -12,25 +12,10 @@ import {
   downloadImage,
 } from './lib/apis.js'
 
-// segment 兼容导入: icqq → oicq → global
-let segment
-try {
-  segment = (await import('icqq')).segment
-} catch {
-  try {
-    segment = (await import('oicq')).segment
-  } catch {
-    segment = global.segment || { image: () => '' }
-  }
-}
+// TRSS-Yunzai 启动时已将 segment 注入为全局变量
+const segment = global.segment || { image: () => '' }
 
-// 喵喵风格 初始化日志
-const LOG_PREFIX = '[scarch_photoes]'
-if (Bot?.logger?.info) {
-  Bot.logger.info(`${LOG_PREFIX} 美图插件 v1.0.0 初始化~`)
-} else {
-  console.log(`${LOG_PREFIX} 美图插件 v1.0.0 初始化~`)
-}
+console.log('[scarch_photoes] 美图插件 v1.0.0 初始化~')
 
 const HELP_MSG = [
   '=====  美图插件  =====',
