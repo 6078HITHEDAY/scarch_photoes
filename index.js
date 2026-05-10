@@ -1,4 +1,4 @@
-import plugin from '../../../lib/plugin/plugin.js'
+import plugin from '../../lib/plugin/plugin.js'
 import { segment } from 'icqq'
 import { config } from './lib/config.js'
 import { cooldown } from './lib/cooldown.js'
