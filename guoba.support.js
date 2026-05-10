@@ -5,7 +5,6 @@ import { fileURLToPath } from 'url'
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const configPath = resolve(__dirname, 'config.json')
 
-// 默认值（和 lib/config.js 保持一致）
 const defaults = {
   cooldown: 10,
   dailyLimit: 50,
@@ -16,17 +15,23 @@ const defaults = {
   pixivProxy: 'i.pixiv.re',
 }
 
+// 内存缓存，避免每次 getConfigData 都读磁盘（参考 Chat-plugin）
+let _cache = null
 function readConfig() {
+  if (_cache) return _cache
   try {
     if (existsSync(configPath)) {
       const saved = JSON.parse(readFileSync(configPath, 'utf-8'))
-      return { ...defaults, ...saved }
+      _cache = { ...defaults, ...saved }
+      return _cache
     }
   } catch (_) {}
-  return { ...defaults }
+  _cache = { ...defaults }
+  return _cache
 }
-
-const PREFIX = 'scarch_photoes.'
+function clearCache() {
+  _cache = null
+}
 
 export function supportGuoba () {
   return {
@@ -39,6 +44,8 @@ export function supportGuoba () {
       isV3: true,
       isV2: false,
       showInMenu: 'auto',
+      icon: 'mdi:image-multiple',
+      iconColor: '#e91e63',
     },
 
     configInfo: {
@@ -48,14 +55,14 @@ export function supportGuoba () {
           component: 'SOFT_GROUP_BEGIN',
         },
         {
-          field: `${PREFIX}cooldown`,
+          field: 'cooldown',
           label: '命令间隔(秒)',
           bottomHelpMessage: '同一用户两次命令间的最小间隔',
           component: 'InputNumber',
           componentProps: { min: 1, max: 120, placeholder: '10' },
         },
         {
-          field: `${PREFIX}dailyLimit`,
+          field: 'dailyLimit',
           label: '每日限额',
           bottomHelpMessage: '每用户每天最大调用次数，0 = 不限制',
           component: 'InputNumber',
@@ -67,7 +74,7 @@ export function supportGuoba () {
           component: 'SOFT_GROUP_BEGIN',
         },
         {
-          field: `${PREFIX}r18Mode`,
+          field: 'r18Mode',
           label: 'R18 模式',
           bottomHelpMessage: 'R18 内容控制策略',
           component: 'Select',
@@ -80,7 +87,7 @@ export function supportGuoba () {
           },
         },
         {
-          field: `${PREFIX}imageSize`,
+          field: 'imageSize',
           label: '图片尺寸',
           bottomHelpMessage: '二次元图片质量',
           component: 'Select',
@@ -93,7 +100,7 @@ export function supportGuoba () {
           },
         },
         {
-          field: `${PREFIX}maxResults`,
+          field: 'maxResults',
           label: '榜单显示张数',
           bottomHelpMessage: 'P站日榜每次发送张数',
           component: 'InputNumber',
@@ -105,13 +112,13 @@ export function supportGuoba () {
           component: 'SOFT_GROUP_BEGIN',
         },
         {
-          field: `${PREFIX}downloadMode`,
+          field: 'downloadMode',
           label: '下载模式',
           bottomHelpMessage: '开启后图片先下载再发送(Buffer)',
           component: 'Switch',
         },
         {
-          field: `${PREFIX}pixivProxy`,
+          field: 'pixivProxy',
           label: 'Pixiv 代理',
           bottomHelpMessage: '替换 i.pximg.net 的代理域名',
           component: 'Select',
@@ -125,26 +132,13 @@ export function supportGuoba () {
       ],
 
       getConfigData () {
-        const cfg = readConfig()
-        return {
-          [`${PREFIX}cooldown`]: cfg.cooldown,
-          [`${PREFIX}dailyLimit`]: cfg.dailyLimit,
-          [`${PREFIX}r18Mode`]: cfg.r18Mode,
-          [`${PREFIX}imageSize`]: cfg.imageSize,
-          [`${PREFIX}maxResults`]: cfg.maxResults,
-          [`${PREFIX}downloadMode`]: cfg.downloadMode,
-          [`${PREFIX}pixivProxy`]: cfg.pixivProxy,
-        }
+        return readConfig()
       },
 
       setConfigData (data, { Result }) {
         try {
-          // 去掉前缀，写入扁平 key
-          const flat = {}
-          for (const [k, v] of Object.entries(data)) {
-            flat[k.replace(PREFIX, '')] = v
-          }
-          writeFileSync(configPath, JSON.stringify(flat, null, 2), 'utf-8')
+          writeFileSync(configPath, JSON.stringify(data, null, 2), 'utf-8')
+          clearCache()
           return Result.ok({}, '保存成功，重启 Bot 后生效')
         } catch (e) {
           return Result.error({}, '保存失败: ' + e.message)
