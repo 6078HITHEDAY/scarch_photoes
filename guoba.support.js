@@ -139,7 +139,7 @@ export function supportGuoba () {
         try {
           writeFileSync(configPath, JSON.stringify(data, null, 2), 'utf-8')
           clearCache()
-          return Result.ok({}, '保存成功，重启 Bot 后生效')
+          return Result.ok({}, '保存成功，即刻生效~')
         } catch (e) {
           return Result.error({}, '保存失败: ' + e.message)
         }
