@@ -1,5 +1,4 @@
 import plugin from '../../lib/plugin/plugin.js'
-import { segment } from 'icqq'
 import { config } from './lib/config.js'
 import { cooldown } from './lib/cooldown.js'
 import {
@@ -12,6 +11,26 @@ import {
   fetchLandscape,
   downloadImage,
 } from './lib/apis.js'
+
+// segment 兼容导入: icqq → oicq → global
+let segment
+try {
+  segment = (await import('icqq')).segment
+} catch {
+  try {
+    segment = (await import('oicq')).segment
+  } catch {
+    segment = global.segment || { image: () => '' }
+  }
+}
+
+// 喵喵风格 初始化日志
+const LOG_PREFIX = '[scarch_photoes]'
+if (Bot?.logger?.info) {
+  Bot.logger.info(`${LOG_PREFIX} 美图插件 v1.0.0 初始化~`)
+} else {
+  console.log(`${LOG_PREFIX} 美图插件 v1.0.0 初始化~`)
+}
 
 // 帮助信息
 const HELP_MSG = [
