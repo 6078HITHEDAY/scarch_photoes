@@ -32,19 +32,18 @@ if (Bot?.logger?.info) {
   console.log(`${LOG_PREFIX} 美图插件 v1.0.0 初始化~`)
 }
 
-// 帮助信息
 const HELP_MSG = [
   '=====  美图插件  =====',
-  '#美图            → 随机二次元美图',
-  '#美图 [关键词]    → 搜索二次元图片',
-  '#P站搜索 [关键词] → P站图片搜索',
-  '#P站日榜          → P站每日排行榜',
-  '#P站 [标签]      → P站随机作品',
-  '#Bing壁纸         → Bing 每日壁纸',
-  '#三次元           → 三次元 cos 美图',
-  '#风景             → 随机风景壁纸',
-  '#美图 help        → 显示本菜单',
-  '=======================',
+  '#美图              → 随机二次元美图',
+  '#美图 [关键词]      → 搜索二次元图片',
+  '#P站搜索 [关键词]   → P站图片搜索',
+  '#P站日榜            → P站每日排行榜',
+  '#P站 [标签]        → P站随机作品',
+  '#Bing / #Bing壁纸   → Bing 每日壁纸',
+  '#三次元 / #美女     → 三次元 cos 美图',
+  '#风景               → 随机风景壁纸',
+  '#美图help           → 显示本菜单',
+  '=========================',
 ].join('\n')
 
 export default class ScarchPhotoes extends plugin {
@@ -55,29 +54,29 @@ export default class ScarchPhotoes extends plugin {
       event: 'message',
       priority: 5000,
       rule: [
-        // === 帮助 ===
-        { reg: '^#?美图\\s*(help|帮助|菜单|\\?)?$', fnc: 'showHelp' },
-        // === 美图搜索 ===
-        { reg: '^#?美图\\s+(.+)$', fnc: 'handleAnime' },
+        // === 帮助 (必须最先，精确匹配) ===
+        { reg: '^#?美图\\s*(help|帮助|菜单)$', fnc: 'showHelp' },
 
-        // === Bing 壁纸 ===
+        // === Bing (短命令 + 完整命令) ===
         { reg: '^#?(Bing|必应)\\s*(壁纸|每日壁纸|每日图片)?$', fnc: 'handleBing' },
 
-        // === P站日榜 ===
-        { reg: '^#?P站(日榜|每日榜单|每日排行|排行)$', fnc: 'handlePixivRanking' },
-        // P站搜索 (必须先于 P站标签)
+        // === P站日榜 (必须在 P站搜索 和 P站标签 之前) ===
+        { reg: '^#?P站(日榜|每日榜单|排行)$', fnc: 'handlePixivRanking' },
+        // P站搜索 (关键词必填，必须在 P站标签 之前)
         { reg: '^#?P站搜索\\s+(.+)$', fnc: 'handlePixivSearch' },
-        // P站标签随机
+        // P站标签 (兜底: #P站 / #P站 星空)
         { reg: '^#?P站\\s*(.*)$', fnc: 'handlePixivByTag' },
 
+        // === 美图 (无关键词=随机, 有关键词=搜索) ===
+        { reg: '^#?美图\\s*(.*)$', fnc: 'handleAnime' },
+        // === 二次元 ===
+        { reg: '^#?二次元\\s*(.*)$', fnc: 'handleAnime' },
+
         // === 三次元 ===
-        { reg: '^#?(三次元|美女|真人|写真)\\s*(.*)$', fnc: 'handleRealPerson' },
+        { reg: '^#?(三次元|美女|写真)$', fnc: 'handleRealPerson' },
 
         // === 风景 ===
-        { reg: '^#?风景\\s*(.*)$', fnc: 'handleLandscape' },
-
-        // === 二次元美图 (兜底，放最后) ===
-        { reg: '^#?二次元\\s*(.*)$', fnc: 'handleAnime' },
+        { reg: '^#?风景$', fnc: 'handleLandscape' },
       ],
     })
   }
