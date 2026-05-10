@@ -1,0 +1,4 @@
+node_modules/
+.env
+*.log
+scarch_photoes-plugin.tar.gz

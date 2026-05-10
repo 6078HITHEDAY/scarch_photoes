@@ -1,0 +1,9 @@
+{
+  "name": "scarch_photoes-plugin",
+  "version": "1.0.0",
+  "description": "TRSS-Yunzai 插件 —— scarch_photoes",
+  "type": "module",
+  "main": "index.js",
+  "author": "myxcat",
+  "license": "MIT"
+}
