@@ -6,22 +6,23 @@ import {
   fetchPixivByTag,
   fetchPixivRanking,
   fetchBing,
-  fetchRealPerson,
   fetchLandscape,
+  fetchMeinv,
   downloadImage,
 } from '../lib/apis.js'
 
 const HELP_MSG = [
   '=====  美图插件  =====',
-  '#美图              → 随机二次元美图',
-  '#美图 [关键词]      → 搜索二次元图片',
-  '#P站搜索 [关键词]   → P站图片搜索',
-  '#P站日榜            → P站每日排行榜',
-  '#P站 [标签]        → P站随机作品',
-  '#Bing / #Bing壁纸   → Bing 每日壁纸',
-  '#三次元 / #美女     → 三次元 cos 美图',
-  '#风景               → 随机风景壁纸',
-  '#美图help           → 显示本菜单',
+  '#美图 / #搜索美图        → 随机二次元美图',
+  '#美图 [关键词]           → 搜索二次元图片',
+  '#P站搜索 [关键词]        → P站图片搜索',
+  '#P站日榜                  → P站每日排行榜',
+  '#P站 [标签]              → P站随机作品',
+  '#Bing / #Bing壁纸         → Bing 每日壁纸',
+  '#三次元 / #美女           → 三次元 cos 美图',
+  '#风景                     → 随机风景壁纸',
+  '#美图help                 → 显示本菜单',
+  '（所有指令均支持 #搜索 前缀）',
   '=========================',
 ].join('\n')
 
@@ -33,15 +34,15 @@ export class ScarchPhotoes extends plugin {
       event: 'message',
       priority: 5000,
       rule: [
-        { reg: '^#?美图\\s*(help|帮助|菜单)$', fnc: 'showHelp' },
-        { reg: '^#?(Bing|必应)\\s*(壁纸|每日壁纸|每日图片)?$', fnc: 'handleBing' },
-        { reg: '^#?P站(日榜|每日榜单|排行)$', fnc: 'handlePixivRanking' },
-        { reg: '^#?P站搜索\\s+(.+)$', fnc: 'handlePixivSearch' },
-        { reg: '^#?P站\\s*(.*)$', fnc: 'handlePixivByTag' },
-        { reg: '^#?美图\\s*(.*)$', fnc: 'handleAnime' },
-        { reg: '^#?二次元\\s*(.*)$', fnc: 'handleAnime' },
-        { reg: '^#?(三次元|美女|写真)$', fnc: 'handleRealPerson' },
-        { reg: '^#?风景$', fnc: 'handleLandscape' },
+        { reg: '^#(?:搜索)?美图\\s*(help|帮助|菜单)$', fnc: 'showHelp' },
+        { reg: '^#(?:搜索)?(?:Bing|必应)\\s*(?:壁纸|每日壁纸|每日图片)?$', fnc: 'handleBing' },
+        { reg: '^#(?:搜索)?P站(日榜|每日榜单|排行)$', fnc: 'handlePixivRanking' },
+        { reg: '^#(?:搜索)?P站搜索\\s+(.+)$', fnc: 'handlePixivSearch' },
+        { reg: '^#(?:搜索)?P站\\s*(.*)$', fnc: 'handlePixivByTag' },
+        { reg: '^#(?:搜索)?美图\\s*(.*)$', fnc: 'handleAnime' },
+        { reg: '^#(?:搜索)?二次元\\s*(.*)$', fnc: 'handleAnime' },
+        { reg: '^#(?:搜索)?(?:三次元|美女|写真)$', fnc: 'handleRealPerson' },
+        { reg: '^#(?:搜索)?风景$', fnc: 'handleLandscape' },
       ],
     })
   }
@@ -163,7 +164,7 @@ export class ScarchPhotoes extends plugin {
   }
 
   async handleRealPerson() {
-    const result = await fetchRealPerson('cos')
+    const result = await fetchMeinv()
     if (!result.success) return this.e.reply(result.error)
     return this.sendImage({ imageUrl: result.data.imageUrl })
   }
