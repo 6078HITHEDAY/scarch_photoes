@@ -8,6 +8,8 @@ import {
   fetchBing,
   fetchLandscape,
   fetchMeinv,
+  fetchJk,
+  fetchMeitui,
   downloadImage,
 } from '../lib/apis.js'
 
@@ -20,6 +22,8 @@ const HELP_MSG = [
   '#P站 [标签]              → P站随机作品',
   '#Bing / #Bing壁纸         → Bing 每日壁纸',
   '#三次元 / #美女           → 三次元 cos 美图',
+  '#JK / #jk                  → JK 美图',
+  '#看看腿                     → 美腿图',
   '#风景                     → 随机风景壁纸',
   '#美图help                 → 显示本菜单',
   '（所有指令均支持 #搜索 前缀）',
@@ -30,7 +34,7 @@ export class ScarchPhotoes extends plugin {
   constructor() {
     super({
       name: 'scarch_photoes',
-      dsc: '美图插件 — 二次元、P站、Bing、三次元、风景壁纸',
+      dsc: '美图插件 — 二次元、P站、Bing、三次元、JK、美腿、风景',
       event: 'message',
       priority: 5000,
       rule: [
@@ -42,6 +46,8 @@ export class ScarchPhotoes extends plugin {
         { reg: '^#(?:搜索)?美图\\s*(.*)$', fnc: 'handleAnime' },
         { reg: '^#(?:搜索)?二次元\\s*(.*)$', fnc: 'handleAnime' },
         { reg: '^#(?:搜索)?(?:三次元|美女|写真)$', fnc: 'handleRealPerson' },
+        { reg: '^#(?:搜索)?[Jj][Kk]$', fnc: 'handleJk' },
+        { reg: '^#(?:搜索)?看看腿$', fnc: 'handleMeitui' },
         { reg: '^#(?:搜索)?风景$', fnc: 'handleLandscape' },
       ],
     })
@@ -171,6 +177,18 @@ export class ScarchPhotoes extends plugin {
 
   async handleLandscape() {
     const result = await fetchLandscape()
+    if (!result.success) return this.e.reply(result.error)
+    return this.sendImage({ imageUrl: result.data.imageUrl })
+  }
+
+  async handleJk() {
+    const result = await fetchJk()
+    if (!result.success) return this.e.reply(result.error)
+    return this.sendImage({ imageUrl: result.data.imageUrl })
+  }
+
+  async handleMeitui() {
+    const result = await fetchMeitui()
     if (!result.success) return this.e.reply(result.error)
     return this.sendImage({ imageUrl: result.data.imageUrl })
   }

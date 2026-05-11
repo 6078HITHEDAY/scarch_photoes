@@ -38,7 +38,7 @@ export function supportGuoba () {
     pluginInfo: {
       name: 'scarch_photoes',
       title: '美图插件',
-      description: '多源美图 — 二次元、P站、Bing、三次元、风景壁纸',
+      description: '多源美图 — 二次元、P站、Bing、三次元、JK、美腿、风景',
       author: '@myxcat',
       link: 'https://github.com/6078HITHEDAY/scarch_photoes',
       isV3: true,
